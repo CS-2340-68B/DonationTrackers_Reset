@@ -1,5 +1,6 @@
 ### Installation
 Make sure you have `pip` install before moving forward
+We are currently using python3 for this web application
 ```bash
 # Get the source code
 git clone https://github.com/CS-2340-68B/DonationTrackers_Web.git
