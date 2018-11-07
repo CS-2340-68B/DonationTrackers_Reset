@@ -1,0 +1,6 @@
+{
+    "apiKey" : "AIzaSyD6lGd-euEvFPpMZPNAURNRqA7pnNe-CZQ",
+    "authDomain": "https://accounts.google.com/o/oauth2/auth",
+    "databaseURL": "https://donationtracker-4bab8.firebaseio.com/",
+    "storageBucket": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-5exhp%40donationtracker-4bab8.iam.gserviceaccount.com"
+}

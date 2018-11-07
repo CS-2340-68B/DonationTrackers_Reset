@@ -1,6 +1,6 @@
 from flask import Flask, render_template, redirect, session, request, url_for, flash, make_response, jsonify
 from Server.Models.User import User
-import json
+import os, time, json
 
 import pyrebase
 
@@ -18,9 +18,7 @@ db = firebase.database()
 
 app = Flask(__name__)
 
-'''
-Main page index.html
-'''
+# Main page index.html
 @app.route("/")
 def index():
 	return render_template("index.html")
@@ -70,6 +68,17 @@ def register():
 @app.route("/form", methods=["POST"])
 def resetPass():
 	return 
+# Sign in
+@app.route("/signin", methods=["POST"])
+def signin():
+	checkValidUser = True
+	if request.method == 'POST':
+		theEmail = request.form['email_signin']
+		thePassword = request.form['password_signin']
+		return render_template("index.html")
+	else:
+		print(firebase.get('/accounts', None))
+		return render_template("index.html")
 
 # Run server
 app.run(debug=True,host='0.0.0.0', port=5000)
