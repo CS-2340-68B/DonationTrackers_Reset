@@ -78,7 +78,7 @@ def signin():
 		print(username, password)
 		return render_template("index.html")
 	else:
-		print(firebase.get('/accounts', None))
+		# print(firebase.get('/accounts', None))
 		return render_template("index.html")
 
 # Run server
