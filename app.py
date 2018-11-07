@@ -68,13 +68,15 @@ def register():
 @app.route("/form", methods=["POST"])
 def resetPass():
 	return 
+
 # Sign in
 @app.route("/signin", methods=["POST"])
 def signin():
 	checkValidUser = True
 	if request.method == 'POST':
-		theEmail = request.form['email_signin']
-		thePassword = request.form['password_signin']
+		username = request.form['email_signin']
+		password = request.form['password_signin']
+		print(username, password)
 		return render_template("index.html")
 	else:
 		print(firebase.get('/accounts', None))
