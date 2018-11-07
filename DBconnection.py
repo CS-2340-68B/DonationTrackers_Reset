@@ -1,6 +1,5 @@
 import pyrebase, json
 
-
 '''
 Firebase class
 '''
