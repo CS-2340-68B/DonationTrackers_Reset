@@ -1,7 +1,6 @@
 from flask import Flask, render_template, redirect, session, request, url_for, flash, make_response, jsonify
 from Server.Models.User import User
 import os, time, json
-
 import pyrebase
 
 config = {
