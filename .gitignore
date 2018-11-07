@@ -1,8 +1,8 @@
 # Byte-compiled / optimized / DLL files
+firebase/*
 __pycache__/
 *.py[cod]
 *$py.class
-./firebase
 
 # C extensions
 *.so
