@@ -1,11 +1,17 @@
-<!DOCTYPE html>
+
 <html>
 	<head>
+		{% block head %}
+		<link href='https://fonts.googleapis.com/css?family=Titillium+Web:400,300,600' rel='stylesheet' type='text/css'>
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
-		<meta name="viewport" content="initial-scale=1,width=device-width"/>
-		<title>Login</title>
+		<script src="{{ url_for('static', filename='../static/functions/lib/jquery.js') }}"></script>
+
+		<meta name="viewport" content="initial-scale=1, width=device-width"/>
+		<title>Donation Tracker</title>
+		{% endblock %}
 	</head>
 	<body>
-		{% block body %}{% endblock %}
+		{% block body %}
+		{% endblock %}
 	</body>
 </html>
