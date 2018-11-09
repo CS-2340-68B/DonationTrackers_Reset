@@ -92,8 +92,10 @@ def signin():
 					"data": account.val()
 				}))
 			else:
-				account.val()["failedAttempts"] += 1
-				account.val()["isLock"] = True
+				if account.val()["failedAttempts"] >= 3:
+					account.val()["isLock"] = True
+				else:
+					account.val()["failedAttempts"] += 1
 				db.child("accounts").child(account.key()).update(account.val())
 				return make_response(jsonify({
 					"status": "wrongPassword"
