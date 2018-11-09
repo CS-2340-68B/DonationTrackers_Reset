@@ -50,6 +50,21 @@ def getLocations():
 		locations.append(location.val())
 	return make_response(jsonify(locations))
 
+@app.route("/getDonations", methods=["POST", "GET"]) 
+def getDonations():
+	if request.method == "POST":
+		locationName = request.form.get("locationName")
+		print(locationName)
+		localDB = db.child("donations").order_by_child("location").equal_to(locationName)
+		donations = []
+		for donation in localDB.get().each():
+			d = donation.val()
+			d["donationKey"] = donation.key()
+			donations.append(d)
+		return make_response(jsonify(donations))
+
+	
+
 @app.route("/register", methods=["POST"])
 def register():
 	username = request.form.get("username")
@@ -107,4 +122,4 @@ def signin():
 		return render_template("index.html")
 
 # Run server
-# app.run(debug=True,host='0.0.0.0', port=5000)
+app.run(debug=True,host='0.0.0.0', port=5000)
