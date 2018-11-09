@@ -1,68 +1,66 @@
 {% extends "layout.html" %}
-
 {% block body %}
 
-<!-- Code -->
-<br><br>
+<!-- Import the files from static -->
+<link href="{{ url_for('static', filename='../static/stylesheet/login.css') }}" rel="stylesheet">
+<script type="text/javascript" src=" {{ url_for('static', filename='../static/functions/login.js') }}"></script>
 
-<form>
-  <div class="form-row">
-    <div class="col-md-4 mb-3">
-      <label for="userFirstName">First name</label>
-      <input type="text" class="form-control is-valid" id="userFirstName" placeholder="First name" value="Mark" required>
+<!-- Main Code -->
+<div id="back">
+  <div class="backRight"></div>
+  <div class="backLeft"></div>
+</div>
 
+<div id="slideBox">
+  <div class="topLayer">
+    <div class="left">
+      <div class="content">
+        <h2>Sign Up</h2>
+        <form id="signup_form" method="post" enctype="multipart/form-data" onsubmit="return false;">
+			<div class="form-group">
+				<input id="email_signup" type="text" placeholder="Email"/>
+			</div>
+          	<div class="form-group">
+				<input type="text" placeholder="Password" />
+			</div>
+			<div class="form-group">
+				<input type="text" placeholder="Confirm Password" />
+			</div>
+			<div class="form-group">
+				<select id="userType" data-selected="">
+					<option value="ADMIN">ADMIN</option>
+					<option value="LOCATIONEMPLOYEE">LOCATIONEMPLOYEE</option>
+					<option value="USER">USER</option>
+					<option value="MANAGER">MANAGER</option>
+				</select>
+			</div>
+        </form>
+		<div class="floatRight">
+			<button id="goLeft" class="off">Login</button>
+			<button type="submit" value="signup" >Sign Up</button>
+		</div>
+      </div>
     </div>
-    <div class="col-md-4 mb-3">
-      <label for="userLastName">Last name</label>
-      <input type="text" class="form-control is-valid" id="userLastName" placeholder="Last name" value="Otto" required>
-
-    </div>
-    <div class="col-md-4 mb-3">
-      <label for="userEmail">Your Email</label>
-      <div class="input-group">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="inputGroupPrepend3">@</span>
-        </div>
-        <input type="text" class="form-control is-invalid" id="userEmail" placeholder="Your Email" aria-describedby="inputGroupPrepend3" required>
+    <div class="right">
+      <div class="content">
+        <h2>Login</h2>
+        <form id="signin-form" action="/signin" method="POST" enctype="multipart/form-data">
+          <div class="form-group">
+            <input type="text" placeholder="Email" name="email_signin" />
+          </div>
+		  <div class="form-group">
+            <input type="text" placeholder="Password" name="password_signin" />
+          </div>
+		  	<div class="floatRight">
+				<button type="submit" value="submit">Login</button>
+			</div>
+        </form>
+		<div class="floatRight">
+			<button id="goRight" class="off">Sign Up</button>
+		</div>
       </div>
     </div>
   </div>
-  <br>
-  <div class="form-row">
-    <div class="col-md-6 mb-3">
-      <label for="validationServer03">City</label>
-      <input type="text" class="form-control is-invalid" id="validationServer03" placeholder="City" required>
-      <div class="invalid-feedback">
-        Please provide a valid city.
-      </div>
-    </div>
-    <div class="col-md-3 mb-3">
-      <label for="validationServer04">State</label>
-      <input type="text" class="form-control is-invalid" id="validationServer04" placeholder="State" required>
-      <div class="invalid-feedback">
-        Please provide a valid state.
-      </div>
-    </div>
-    <div class="col-md-3 mb-3">
-      <label for="validationServer05">Zip</label>
-      <input type="text" class="form-control is-invalid" id="validationServer05" placeholder="Zip" required>
-      <div class="invalid-feedback">
-        Please provide a valid zip.
-      </div>
-    </div>
-  </div>
-  <div class="form-group">
-    <div class="form-check">
-      <input class="form-check-input is-invalid" type="checkbox" value="" id="invalidCheck3" required>
-      <label class="form-check-label" for="invalidCheck3">
-        Agree to terms and conditions
-      </label>
-      <div class="invalid-feedback">
-        You must agree before submitting.
-      </div>
-    </div>
-  </div>
-  <button class="btn btn-primary" type="submit">Unlock Account</button>
-</form>
-
+</div>
+<!-- End Code -->
 {% endblock %}
