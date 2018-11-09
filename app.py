@@ -1,6 +1,7 @@
 from flask import Flask, render_template, redirect, session, request, url_for, flash, make_response, jsonify
 from Server.Models.User import User
 import os, time, json
+from Server.Functions.PasswordModifier import encrypt
 import pyrebase
 
 config = {
@@ -75,10 +76,32 @@ def signin():
 	if request.method == 'POST':
 		username = request.form['email_signin']
 		password = request.form['password_signin']
-		print(username, password)
-		return render_template("index.html")
+		localDB = db.child("accounts").order_by_child("username").equal_to(username)
+		for account in localDB.get().each():
+			if account.val()["isLock"]:
+				return make_response(jsonify({
+					"status": "accountLock",
+					"data": account.val()
+				}))
+			if account.val()["password"] == encrypt(password):
+				account.val()["userKey"] = account.key()
+				account.val()["failedAttempts"] = 0
+				db.child("accounts").child(account.key()).update(account.val())
+				return make_response(jsonify({
+					"status": "success",
+					"data": account.val()
+				}))
+			else:
+				account.val()["failedAttempts"] += 1
+				account.val()["isLock"] = True
+				db.child("accounts").child(account.key()).update(account.val())
+				return make_response(jsonify({
+					"status": "wrongPassword"
+				}))
+		return make_response(jsonify({
+			"status": "noAccount"
+		}))
 	else:
-		# print(firebase.get('/accounts', None))
 		return render_template("index.html")
 
 # Run server

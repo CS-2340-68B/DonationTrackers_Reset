@@ -8,6 +8,7 @@ class User:
         self.assignedLocation = locationName
         self.failedAttempts = 0
         self.isLock = False
+        self.userKey = None
     
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__, 
