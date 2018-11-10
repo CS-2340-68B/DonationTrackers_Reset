@@ -1,6 +1,7 @@
 Click==7.0
 DateTime==4.3
 Flask==1.0.2
+Flask-Script==2.0.6
 Flask-WTF==0.14.2
 gcloud==0.17.0
 googleapis-common-protos==1.5.3

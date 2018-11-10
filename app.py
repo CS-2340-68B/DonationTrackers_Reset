@@ -3,6 +3,8 @@ from Server.Models.User import User
 import os, time, json
 from Server.Functions.PasswordModifier import encrypt
 import pyrebase
+import httplib2
+from threading import Timer
 
 config = {
 	"apiKey": "AIzaSyD6lGd-euEvFPpMZPNAURNRqA7pnNe-CZQ",
@@ -121,5 +123,18 @@ def signin():
 	else:
 		return render_template("index.html")
 
+
+def sendRequest():
+	httplib2.Http().request("https://donation-tracker-server-heroku.herokuapp.com/ping")
+	# httplib2.Http().request("http://localhost:5000/ping")
+
+@app.route("/ping")
+def ping():
+	print("PING PING PING")
+	Timer(60.0, sendRequest).start()
+	return make_response(jsonify({}))
+
 # Run server
-# app.run(debug=True,host='0.0.0.0', port=5000)
+if __name__ == "__main__":
+	Timer(1.0, sendRequest).start()
+	app.run(debug=True,host='0.0.0.0', port=5000)
