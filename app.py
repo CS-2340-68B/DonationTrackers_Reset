@@ -23,9 +23,9 @@ app = Flask(__name__)
 # Main page index.html
 @app.route("/")
 def index():
-	return render_template("index.html")
+	return render_template("index.html", locationList=json.loads(getLocations().data))
 
-@app.route("/test", methods =["POST"])
+@app.route("/test", methods =["POST", "GET"])
 def test():
 	# body = request.form
 	# # username = body["criteria"]
@@ -52,11 +52,10 @@ def getLocations():
 		locations.append(location.val())
 	return make_response(jsonify(locations))
 
-@app.route("/getDonations", methods=["POST", "GET"]) 
+@app.route("/getDonations", methods=["POST", "GET"])
 def getDonations():
 	if request.method == "POST":
 		locationName = request.form.get("locationName")
-		print(locationName)
 		localDB = db.child("donations").order_by_child("location").equal_to(locationName)
 		donations = []
 		for donation in localDB.get().each():
@@ -65,12 +64,11 @@ def getDonations():
 			donations.append(d)
 		return make_response(jsonify(donations))
 
-	
 
 @app.route("/register", methods=["POST"])
 def register():
 	username = request.form.get("username")
-	password = request.form.get("password")
+	password = encrypt(request.form.get("password"))
 	userType = request.form.get("userType")
 	locationName = request.form.get("locationName")
 	localDB = db.child("accounts").order_by_child("username").equal_to(username)
@@ -84,7 +82,11 @@ def register():
 
 @app.route("/form", methods=["POST"])
 def resetPass():
-	return 
+	return
+
+@app.route("/home", methods=["GET"])
+def home():
+	return render_template("home.html")
 
 # Sign in
 @app.route("/signin", methods=["POST"])
@@ -104,10 +106,11 @@ def signin():
 				account.val()["userKey"] = account.key()
 				account.val()["failedAttempts"] = 0
 				db.child("accounts").child(account.key()).update(account.val())
-				return make_response(jsonify({
-					"status": "success",
-					"data": account.val()
-				}))
+				# return make_response(jsonify({
+				# 	"status": "success",
+				# 	"data": account.val()
+				# }))
+				return render_template("home.html")
 			else:
 				if account.val()["failedAttempts"] >= 3:
 					account.val()["isLock"] = True
@@ -120,9 +123,8 @@ def signin():
 		return make_response(jsonify({
 			"status": "noAccount"
 		}))
-	else:
-		return render_template("index.html")
-
+	# else:
+	# 	return render_template("index.html")
 
 def sendRequest():
 	httplib2.Http().request("https://donation-tracker-server-heroku.herokuapp.com/ping")
