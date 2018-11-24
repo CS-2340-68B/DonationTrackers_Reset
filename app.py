@@ -110,7 +110,7 @@ def signin():
 				# 	"status": "success",
 				# 	"data": account.val()
 				# }))
-				return render_template("home.html")
+				return render_template("home.html", username=username)
 			else:
 				if account.val()["failedAttempts"] >= 3:
 					account.val()["isLock"] = True
