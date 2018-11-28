@@ -100,6 +100,42 @@ def logout():
 	session.pop('user', None)
 	return  redirect(url_for('index'))
 
+
+@app.route("/map", methods=["GET"])
+def mapView():
+	if g.user:
+		if 'user' in session:
+			username = session['user']
+			return render_template("map.html", username=username)
+	return redirect(url_for('index'))
+
+@app.route("/test", methods=["GET"])
+def testView():
+	return render_template("test.html")
+
+@app.route("/footer", methods=["GET"])
+def footer():
+	return render_template("footer.html")
+
+@app.route("/locationlist")
+def locationListView():
+	if g.user:
+		if 'user' in session:
+			username = session['user']
+			return render_template("locationlist.html", username=username)
+	return redirect(url_for('index'))
+
+@app.route("/locationdetail/", methods=["POST"])
+def locationDetail():
+	if g.user:
+		if 'user' in session:
+			username = session['user']
+			val = request.form.to_dict()
+			print(val.get('location', 0))
+			return render_template("locationlist.html", username=username)
+			# return render_template("locationdetail.html", username=username)
+	return redirect(url_for('index'))
+
 # Sign in
 @app.route("/signin", methods=["POST"])
 def signin():
