@@ -16,28 +16,35 @@
     <div class="left">
       <div class="content">
         <h2>Sign Up</h2>
-        <form id="signup_form" method="post" enctype="multipart/form-data" onsubmit="return false;">
+				<form id="signup_form" action="/register" method="POST" enctype="multipart/form-data">
+					<!-- onsubmit="return false;" -->
 			<div class="form-group">
-				<input id="email_signup" type="text" placeholder="Email"/>
+				<input name="username" type="text" placeholder="Email"/>
 			</div>
           	<div class="form-group">
-				<input type="text" placeholder="Password" />
+				<input type="text" placeholder="Password" name="password" />
 			</div>
 			<div class="form-group">
-				<input type="text" placeholder="Confirm Password" />
-			</div>
-			<div class="form-group">
-				<select id="userType" data-selected="">
+				<select id="userType" data-selected="" name="userType">
 					<option value="ADMIN">ADMIN</option>
 					<option value="LOCATIONEMPLOYEE">LOCATIONEMPLOYEE</option>
 					<option value="USER">USER</option>
 					<option value="MANAGER">MANAGER</option>
 				</select>
 			</div>
-        </form>
+			<div class="form-group">
+				<select data-selected="" name="locationName">
+					{% for location in locationList %}
+						<option value="{{ location.locationName }}"> {{ location.locationName }}</option>
+					{% endfor %}
+				</select>
+			</div>
+			<div class="floatRight">
+				<button type="submit" value="submit" >Sign Up</button>
+			</div>
+			</form>
 		<div class="floatRight">
 			<button id="goLeft" class="off">Login</button>
-			<button type="submit" value="signup" >Sign Up</button>
 		</div>
       </div>
     </div>
@@ -48,12 +55,12 @@
           <div class="form-group">
             <input type="text" placeholder="Email" name="email_signin" />
           </div>
-		  <div class="form-group">
-            <input type="text" placeholder="Password" name="password_signin" />
-          </div>
-		  	<div class="floatRight">
-				<button type="submit" value="submit">Login</button>
-			</div>
+					<div class="form-group">
+						<input type="text" placeholder="Password" name="password_signin" />
+					</div>
+					<div class="floatRight">
+						<button type="submit" value="submit">Login</button>
+					</div>
         </form>
 		<div class="floatRight">
 			<button id="goRight" class="off">Sign Up</button>

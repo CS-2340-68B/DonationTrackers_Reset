@@ -1,10 +1,11 @@
-from flask import Flask, render_template, redirect, session, request, url_for, flash, make_response, jsonify
+from flask import Flask, render_template, redirect, session, request, g, url_for, flash, make_response, jsonify
 from Server.Models.User import User
 import os, time, json
 from Server.Functions.PasswordModifier import encrypt
 import pyrebase
 import httplib2
 from threading import Timer
+from functools import wraps
 
 config = {
 	"apiKey": "AIzaSyD6lGd-euEvFPpMZPNAURNRqA7pnNe-CZQ",
@@ -19,30 +20,32 @@ firebase = pyrebase.initialize_app(config)
 db = firebase.database()
 
 app = Flask(__name__)
+app.secret_key = os.urandom(24)
+
+@app.before_request
+def before_request():
+	try:
+		print (g.user)
+	except:
+		g.user = None
+
+	if 'user' in session:
+		g.user = session['user']
+	print(session)
+
+def auth_required(f):
+	@wraps(f)
+	def decorated(*args, **kwargs):
+		auth = request.authorization
+		if auth and auth.username == '' and auth.password == '':
+			return f(*args, **kwargs)
+		return make_response('Could not verify your login', 401, {'WWW-Authenticate': 'Basic realm="Login Required"'})
+	return decorated
 
 # Main page index.html
 @app.route("/")
 def index():
-	return render_template("index.html")
-
-@app.route("/test", methods =["POST"])
-def test():
-	# body = request.form
-	# # username = body["criteria"]
-	# user = body.get("criteria[failedAttempts]")
-	# print(user)
-	# print(body)
-	# # print(username)
-	# # accounts = db.child("accounts").get()
-	# # print(accounts)
-	# # print("123")
-	# return make_response(jsonify({"Tuan": "Nguyen"}))
-	body = request.json
-	item = {
-		"username": "tuannguyen",
-		"password": "123456"
-	}
-	return make_response(jsonify(item))
+	return render_template("index.html", locationList=json.loads(getLocations().data))
 
 @app.route("/getLocations")
 def getLocations():
@@ -52,11 +55,10 @@ def getLocations():
 		locations.append(location.val())
 	return make_response(jsonify(locations))
 
-@app.route("/getDonations", methods=["POST", "GET"]) 
+@app.route("/getDonations", methods=["POST", "GET"])
 def getDonations():
 	if request.method == "POST":
 		locationName = request.form.get("locationName")
-		print(locationName)
 		localDB = db.child("donations").order_by_child("location").equal_to(locationName)
 		donations = []
 		for donation in localDB.get().each():
@@ -65,12 +67,11 @@ def getDonations():
 			donations.append(d)
 		return make_response(jsonify(donations))
 
-	
 
 @app.route("/register", methods=["POST"])
 def register():
 	username = request.form.get("username")
-	password = request.form.get("password")
+	password = encrypt(request.form.get("password"))
 	userType = request.form.get("userType")
 	locationName = request.form.get("locationName")
 	localDB = db.child("accounts").order_by_child("username").equal_to(username)
@@ -80,17 +81,31 @@ def register():
 	if userType == "ADMIN" or userType == "USER":
 		user.assignedLocation = None
 	db.child("accounts").push(user.__dict__)
-	return make_response(jsonify({"status": "success"}))
+	return render_template("home.html", username=username)
 
 @app.route("/form", methods=["POST"])
 def resetPass():
-	return 
+	return
+
+@app.route("/home", methods=["GET"])
+def home():
+	if g.user:
+		if 'user' in session:
+			username = session['user']
+		return render_template('home.html', username=username)
+	return redirect(url_for('index'))
+
+@app.route("/logout")
+def logout():
+	session.pop('user', None)
+	return  redirect(url_for('index'))
 
 # Sign in
 @app.route("/signin", methods=["POST"])
 def signin():
 	checkValidUser = True
 	if request.method == 'POST':
+		session.pop('user', None) # Add new session for the user
 		username = request.form['email_signin']
 		password = request.form['password_signin']
 		localDB = db.child("accounts").order_by_child("username").equal_to(username)
@@ -100,14 +115,14 @@ def signin():
 					"status": "accountLock",
 					"data": account.val()
 				}))
+				# TODO
+				# Return back message to current page to "Your account has been locked"
 			if account.val()["password"] == encrypt(password):
 				account.val()["userKey"] = account.key()
 				account.val()["failedAttempts"] = 0
 				db.child("accounts").child(account.key()).update(account.val())
-				return make_response(jsonify({
-					"status": "success",
-					"data": account.val()
-				}))
+				session['user'] = username
+				return redirect(url_for('home'))
 			else:
 				if account.val()["failedAttempts"] >= 3:
 					account.val()["isLock"] = True
@@ -120,9 +135,6 @@ def signin():
 		return make_response(jsonify({
 			"status": "noAccount"
 		}))
-	else:
-		return render_template("index.html")
-
 
 def sendRequest():
 	httplib2.Http().request("https://donation-tracker-server-heroku.herokuapp.com/ping")
