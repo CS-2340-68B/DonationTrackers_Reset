@@ -3,7 +3,7 @@
 
 <!-- Import the files from static -->
 <link href="{{ url_for('static', filename='../static/stylesheet/login.css') }}" rel="stylesheet">
-<script type="text/javascript" src=" {{ url_for('static', filename='../static/functions/login.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='../static/functions/login.js') }}"></script>
 
 <!-- Main Code -->
 <div id="back">
@@ -17,12 +17,11 @@
       <div class="content">
         <h2>Sign Up</h2>
 				<form id="signup_form" action="/register" method="POST" enctype="multipart/form-data">
-					<!-- onsubmit="return false;" -->
 			<div class="form-group">
 				<input name="username" type="text" placeholder="Email"/>
 			</div>
           	<div class="form-group">
-				<input type="text" placeholder="Password" name="password" />
+				<input type="password" placeholder="Password" name="password" />
 			</div>
 			<div class="form-group">
 				<select id="userType" data-selected="" name="userType">
@@ -56,7 +55,7 @@
             <input type="text" placeholder="Email" name="email_signin" />
           </div>
 					<div class="form-group">
-						<input type="text" placeholder="Password" name="password_signin" />
+						<input type="password" placeholder="Password" name="password_signin" />
 					</div>
 					<div class="floatRight">
 						<button type="submit" value="submit">Login</button>

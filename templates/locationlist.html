@@ -1,0 +1,64 @@
+{% extends "home.html" %}
+
+<link href="{{ url_for('static', filename='../static/stylesheet/locationlist.css') }}" rel="stylesheet">
+<script type="text/javascript" src=" {{ url_for('static', filename='../static/functions/locationlist.js') }}"></script>
+
+{% block locationList %}
+    <div class="w3-container">
+        <table class="table-hover w3-table w3-blue">
+          <tr>
+            <th>Location</th>
+            <th>Address</th>
+            <th>Points</th>
+          </tr>
+          <tr class="table-row" href="#">
+            <td>Jill</td>
+            <td>Smith</td>
+            <td>50</td>
+          </tr>
+          <tr class="table-row" href="#">
+            <td>Eve</td>
+            <td>Jackson</td>
+            <td>94</td>
+          </tr>
+          <tr class="table-row" href="#">
+            <td>Adam</td>
+            <td>Johnson</td>
+            <td>67</td>
+          </tr>
+        </table>
+    </div>
+
+
+<!-- Stylesheet of locationlist -->
+<style>
+    .table-row{
+        cursor:pointer;
+    }
+</style>
+
+<!-- Controller -->
+<script>
+    $(document).ready(function($) {
+        $(".table-row").click(function() {
+            var locationList = [];
+            $(this).closest('tr').find('td').each(function() {
+                var textVal = $(this).text();
+                locationList.push(textVal);
+            })
+            console.log(locationList);
+            var data = {"location": locationList[0],"address": locationList[1]};
+            $.ajax({
+                type: 'POST',
+                url: '/locationdetail/',
+                dataType : 'json',
+                data: {location: JSON.stringify(data)},
+                success: function(data) {
+                    console.log("Success")
+                }
+            });
+        });
+    });
+</script>
+
+{% endblock %}
