@@ -24,6 +24,7 @@ app.secret_key = os.urandom(24)
 
 @app.before_request
 def before_request():
+
 	try:
 		print (g.user)
 	except:
@@ -56,10 +57,13 @@ def getLocations():
 	return make_response(jsonify(locations))
 
 @app.route("/getDonations", methods=["POST", "GET"])
+
+# def getLocations(locationName): // No parameter
 def getDonations():
 	if request.method == "POST":
-		locationName = request.form.get("locationName")
-		localDB = db.child("donations").order_by_child("location").equal_to(locationName)
+		# Cannot pass parameter in routing method
+		# localDB = db.child("donations").order_by_child("location").equal_to(locationName)
+		localDB = db.child("donations").order_by_child("location").equal_to(request.form.get("locationName"))
 		donations = []
 		for donation in localDB.get().each():
 			d = donation.val()
@@ -100,6 +104,55 @@ def logout():
 	session.pop('user', None)
 	return  redirect(url_for('index'))
 
+
+@app.route("/map", methods=["GET"])
+def mapView():
+	if g.user:
+		if 'user' in session:
+			username = session['user']
+			return render_template("map.html", username=username)
+	return redirect(url_for('index'))
+
+@app.route("/test", methods=["GET"])
+def testView():
+	return render_template("test.html")
+
+@app.route("/locationlist")
+def locationListView():
+	if g.user:
+		if 'user' in session:
+			username = session['user']
+			return render_template("locationlist.html", username=username, locationList=json.loads(getLocations().data))
+	return redirect(url_for('index'))
+
+
+# @app.route("/donationdetail/<string:location>")
+# def locationDetail(location):
+# 	if g.user:
+# 		if 'user' in session:
+# 			username = session['user'] ; hashDict = {}
+# 			# print(location)
+# 			# for data in json.loads(getLocations().data):
+# 			# 	if data['locationName'] == location:
+# 			# 		hashDict = data
+
+# 			return render_template("locationdetail.html", username=username, locationName=location)
+# 	return redirect(url_for('index'))
+
+
+@app.route("/locationdetail/<string:location>")
+def locationDetail(location):
+	if g.user:
+		if 'user' in session:
+			username = session['user'] ; hashDict = {}
+			print(location)
+			for data in json.loads(getLocations().data):
+				if data['locationName'] == location:
+					hashDict = data
+
+			return render_template("locationdetail.html", username=username, locationName=location, detail=hashDict)
+	return redirect(url_for('index'))
+
 # Sign in
 @app.route("/signin", methods=["POST"])
 def signin():
@@ -122,7 +175,11 @@ def signin():
 				account.val()["failedAttempts"] = 0
 				db.child("accounts").child(account.key()).update(account.val())
 				session['user'] = username
-				return redirect(url_for('home'))
+				return make_response(jsonify({
+					"status": "success",
+					"data": account.val()
+				}))
+				# return redirect(url_for('home')) // Must return Json object
 			else:
 				if account.val()["failedAttempts"] >= 3:
 					account.val()["isLock"] = True
@@ -147,6 +204,6 @@ def ping():
 
 # Run server
 if __name__ == "__main__":
-	# Timer(1.0, sendRequest).start()
-	# app.run()
+	Timer(1.0, sendRequest).start()
 	app.run(debug=True,host='0.0.0.0', port=5000)
+	target.parentElement.innerText
