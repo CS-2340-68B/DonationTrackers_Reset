@@ -24,7 +24,6 @@ app.secret_key = os.urandom(24)
 
 @app.before_request
 def before_request():
-
 	try:
 		print (g.user)
 	except:
@@ -46,6 +45,7 @@ def auth_required(f):
 # Main page index.html
 @app.route("/")
 def index():
+	print("test ", getDonations("AFD Station 4"))
 	return render_template("index.html", locationList=json.loads(getLocations().data))
 
 @app.route("/getLocations")
@@ -118,12 +118,15 @@ def locationListView():
 	if g.user:
 		if 'user' in session:
 			username = session['user']
-			return render_template("locationlist.html", username=username, locationList=json.loads(getLocations().data))
+			hashDict = json.loads(getLocations().data)
+			for index in range(len(hashDict)):
+				hashDict[index]['picture'] = "../static/pictures/thiftstore" + str(index) + ".png"
+			return render_template("locationlist.html", username=username, locationList=hashDict)
 	return redirect(url_for('index'))
 
 
 @app.route("/donationdetail/<string:location>")
-def locationDetail(location):
+def donationDetail(location):
 	if g.user:
 		if 'user' in session:
 			username = session['user'] ; hashDict = {}
@@ -132,9 +135,17 @@ def locationDetail(location):
 			# 	if data['locationName'] == location:
 			# 		hashDict = data
 
-			return render_template("locationdetail.html", username=username, locationName=location)
+			return render_template("donationdetail.html", username=username, locationName=location)
 	return redirect(url_for('index'))
 
+
+@app.route("/searchView")
+def searchView():
+	return render_template("search.html")
+
+@app.route("/history")
+def historyView():
+	pass
 
 @app.route("/locationdetail/<string:location>")
 def locationDetail(location):

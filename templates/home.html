@@ -27,9 +27,10 @@
             <h5>Dashboard</h5>
         </div>
         <div class="w3-bar-block">
-            <a href="/home" class="w3-bar-item w3-button w3-padding w3-blue"><i class="fa fa-users fa-fw"></i>  Search</a>
+            <a href="/home" class="w3-bar-item w3-button w3-padding w3-blue"><i class="fa fa-users fa-fw"></i>  Dashboard</a>
             <a href="/locationlist" class="w3-bar-item w3-button w3-padding"><i class="fa fa-eye fa-fw"></i>  Location List</a>
-            <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-history fa-fw"></i>  History</a>
+            <a href="/searchView" class="w3-bar-item w3-button w3-padding"><i class="fa fa-search fa-fw"></i>  Search</a>
+            <a href="/history" class="w3-bar-item w3-button w3-padding"><i class="fa fa-history fa-fw"></i>  History</a>
             <a href="/logout" class="w3-bar-item w3-button w3-padding"><i class="fa fa-cog fa-fw"></i>  Logout</a><br><br>
         </div>
     </nav>
@@ -50,6 +51,7 @@
                 {% block locationList %} {% endblock %}
                 {% block locationDetail %} {% endblock %}
                 {% block donationDetail %} {% endblock %}
+                {% block search %} {% endblock %}
                 <div class="w3-third">
                     {% block map %} {% endblock%}
                 </div>
