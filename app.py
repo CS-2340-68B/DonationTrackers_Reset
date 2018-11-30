@@ -24,6 +24,7 @@ app.secret_key = os.urandom(24)
 
 @app.before_request
 def before_request():
+
 	try:
 		print (g.user)
 	except:
@@ -56,9 +57,8 @@ def getLocations():
 	return make_response(jsonify(locations))
 
 @app.route("/getDonations", methods=["POST", "GET"])
-def getDonations():
+def getDonations(locationName):
 	if request.method == "POST":
-		locationName = request.form.get("locationName")
 		localDB = db.child("donations").order_by_child("location").equal_to(locationName)
 		donations = []
 		for donation in localDB.get().each():
@@ -113,27 +113,40 @@ def mapView():
 def testView():
 	return render_template("test.html")
 
-@app.route("/footer", methods=["GET"])
-def footer():
-	return render_template("footer.html")
-
 @app.route("/locationlist")
 def locationListView():
 	if g.user:
 		if 'user' in session:
 			username = session['user']
-			return render_template("locationlist.html", username=username)
+			return render_template("locationlist.html", username=username, locationList=json.loads(getLocations().data))
 	return redirect(url_for('index'))
 
-@app.route("/locationdetail/", methods=["POST"])
-def locationDetail():
+
+@app.route("/donationdetail/<string:location>")
+def locationDetail(location):
 	if g.user:
 		if 'user' in session:
-			username = session['user']
-			val = request.form.to_dict()
-			print(val.get('location', 0))
-			return render_template("locationlist.html", username=username)
-			# return render_template("locationdetail.html", username=username)
+			username = session['user'] ; hashDict = {}
+			# print(location)
+			# for data in json.loads(getLocations().data):
+			# 	if data['locationName'] == location:
+			# 		hashDict = data
+
+			return render_template("locationdetail.html", username=username, locationName=location)
+	return redirect(url_for('index'))
+
+
+@app.route("/locationdetail/<string:location>")
+def locationDetail(location):
+	if g.user:
+		if 'user' in session:
+			username = session['user'] ; hashDict = {}
+			print(location)
+			for data in json.loads(getLocations().data):
+				if data['locationName'] == location:
+					hashDict = data
+
+			return render_template("locationdetail.html", username=username, locationName=location, detail=hashDict)
 	return redirect(url_for('index'))
 
 # Sign in
@@ -186,3 +199,4 @@ def ping():
 if __name__ == "__main__":
 	Timer(1.0, sendRequest).start()
 	app.run(debug=True,host='0.0.0.0', port=5000)
+	target.parentElement.innerText
