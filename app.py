@@ -24,7 +24,7 @@ app.secret_key = os.urandom(24)
 
 @app.before_request
 def before_request():
-
+	# print(getDonations());
 	try:
 		print (g.user)
 	except:
@@ -56,14 +56,10 @@ def getLocations():
 		locations.append(location.val())
 	return make_response(jsonify(locations))
 
-@app.route("/getDonations", methods=["POST", "GET"])
-
-# def getLocations(locationName): // No parameter
-def getDonations():
+@app.route("/getDonations/<string:locationName>", methods=["POST", "GET"])
+def getDonations(locationName):
 	if request.method == "POST":
-		# Cannot pass parameter in routing method
-		# localDB = db.child("donations").order_by_child("location").equal_to(locationName)
-		localDB = db.child("donations").order_by_child("location").equal_to(request.form.get("locationName"))
+		localDB = db.child("donations").order_by_child("location").equal_to(locationName)
 		donations = []
 		for donation in localDB.get().each():
 			d = donation.val()
