@@ -5,7 +5,7 @@
 
 {% block locationDetail %}
 
-<div class="w3-container" style="padding-top:2%" align="center">
+    <div class="w3-container" style="padding-top:2%" align="center">
         <header class="w3-container" style="padding-top:5%" align="center">
             <h4><b><i class="fa"></i> {{locationName}} detail </b></h4>
         </header><hr>
@@ -13,7 +13,7 @@
             <div class="w3-container w3-row">
                 <div class="w3-col s6 w3-center" style="margin-top: 5%;">
                     <img src="../static/pictures/thiftstore0.png" style="height:20%; width:60%"><br><br>
-                    <button class="w3-button w3-white w3-border w3-border-red w3-round-large">Donation List</button>
+                    <button onclick="donateView()" class="w3-button w3-white w3-border w3-border-red w3-round-large">Donation List</button>
                 </div>
                 <div class="w3-col s6" align='left'>
                     <p>STREET ADDRESS: {{detail.address}} </p>
@@ -32,6 +32,8 @@
 
 <!-- Controller -->
 <script>
-
+    function donateView() {
+        window.location.href = '/getDonationsData/' + '{{locationName}}'
+    }
 </script>
 {% endblock %}

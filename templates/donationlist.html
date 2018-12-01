@@ -1,0 +1,44 @@
+{% extends "home.html" %}
+
+{% block donationList %}
+    <div class="w3-container" style="padding-top:2%" align="center">
+        <header class="w3-container" style="padding-top:5%" align="center">
+            <h4><b><i class="fa"></i> {{locationName}} Donation List </b></h4>
+        </header><hr>
+
+        <div style="width:50%; background-color:white;">
+            <div class="w3-container w3-row">
+                {% for item in donationLists %}
+                    <ul class="w3-ul w3-card-4" style="background-color: white;">
+                        <li class="w3-bar">
+                            <span onclick="viewDetail(event)" class="w3-bar-item w3-button w3-black w3-large w3-right">Detail</span>
+                            <img src="../static/pictures/thiftstore0.png" class="w3-bar-item w3-circle w3-hide-small" style="width:90px">
+                            <div class="w3-bar-item">
+                                <span>Category: {{item.category}}</span><br>
+                                <span>Name: {{item.name}}</span><br>
+                                <span>Description: {{item.fullDescription}}</span><br>
+                                <span>DonationId: {{item.donationKey}}</span><br>
+                            </div>
+                        </li>
+                    </ul><br>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+<!-- Stylesheet -->
+<style>
+span {
+    float: left;
+}
+</style>
+
+<!-- Main controller -->
+<script>
+    function viewDetail(event) {
+        textOut = event.target.parentElement.innerText.split('\n')
+        itemKey = textOut[3].slice(12, textOut[3].length)
+        window.location.href = '/getDonationItemDetail/' + '{{locationName}}' + '/' + itemKey
+    }
+</script>
+{% endblock %}

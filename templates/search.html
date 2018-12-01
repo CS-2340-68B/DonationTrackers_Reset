@@ -7,7 +7,7 @@
         </header><hr>
         <div class="w3-card-4" style="width:50%; background-color:white;" align="center">
             <div class="w3-container w3-row" align="center">
-                <form methods="POST">
+                <form action="/searchView" method="POST">
                     <div class="form-row align-items-center" style="margin-top:5%;">
                         <div class="col-7">
                             <input type="text" class="form-control" name="searchID" placeholder="Search for .........">
@@ -16,25 +16,25 @@
                             <button class="btn btn-primary" style="float: right;">Search</button>
                         </div>
                     </div>
+                    <div class="w3-row w3-center">
+                        <div class="w3-col s6">
+                            <div class="form-check" style="float: right;">
+                                <input class="form-check-input" type="checkbox" name="itemChecked">
+                                <label class="form-check-label" for="autoSizingCheck2">
+                                    Item
+                                </label>
+                            </div>
+                        </div>
+                        <div class="w3-col s6">
+                            <div class="form-check" style="float: left;">
+                                <input class="form-check-input" type="checkbox" name="categoryChecked">
+                                <label class="form-check-label" for="autoSizingCheck2">
+                                    Category
+                                </label>
+                            </div>
+                        </div>
+                    </div><hr>
                 </form>
-                <div class="w3-row w3-center">
-                    <div class="w3-col s6">
-                        <div class="form-check" style="float: right;">
-                            <input class="form-check-input" type="checkbox" id="autoSizingCheck2">
-                            <label class="form-check-label" for="autoSizingCheck2">
-                                Item
-                            </label>
-                        </div>
-                    </div>
-                    <div class="w3-col s6">
-                        <div class="form-check" style="float: left;">
-                            <input class="form-check-input" type="checkbox" id="autoSizingCheck2">
-                            <label class="form-check-label" for="autoSizingCheck2">
-                                Category
-                            </label>
-                        </div>
-                    </div>
-                </div><hr>
 
                 <div class="w3-row">
                     <!-- History view show here -->

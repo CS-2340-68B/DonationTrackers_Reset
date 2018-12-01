@@ -37,7 +37,7 @@
     function viewDonation(event) {
         textOut = event.target.parentElement.innerText.split('\n')
         locationName = textOut[0].slice(12, textOut[0].length)
-        // window.location.href = '/locationdetail' + '/' + locationName
+        window.location.href = '/getDonationsData/' + locationName
     }
 </script>
 

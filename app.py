@@ -1,6 +1,6 @@
 from flask import Flask, render_template, redirect, session, request, g, url_for, flash, make_response, jsonify
 from Server.Models.User import User
-import os, time, json
+import os, time, json, requests
 from Server.Functions.PasswordModifier import encrypt
 import pyrebase
 import httplib2
@@ -56,16 +56,38 @@ def getLocations():
 		locations.append(location.val())
 	return make_response(jsonify(locations))
 
-@app.route("/getDonations", methods=["POST", "GET"])
+@app.route("/getDonations/<string:locationName>", methods=["GET", "POST"])
 def getDonations(locationName):
-	if request.method == "POST":
-		localDB = db.child("donations").order_by_child("location").equal_to(locationName)
-		donations = []
-		for donation in localDB.get().each():
-			d = donation.val()
-			d["donationKey"] = donation.key()
-			donations.append(d)
-		return make_response(jsonify(donations))
+	# if request.method == "POST":
+	localDB = db.child("donations").order_by_child("location").equal_to(locationName)
+	donations = []
+	for donation in localDB.get().each():
+		d = donation.val()
+		d["donationKey"] = donation.key()
+		donations.append(d)
+	return make_response(jsonify(donations))
+
+
+@app.route("/getDonationsData/<string:locationName>",  methods=["GET"])
+def getDonationList(locationName):
+	urlPath = 'http://localhost:5000/getDonations/' + locationName
+	respone = requests.get(url=urlPath)
+	return render_template("donationlist.html", donationLists=respone.json(), locationName=locationName)
+
+
+@app.route("/getDonationItemDetail/<string:locationName>/<string:itemKey>", methods=["GET"])
+def getDonationItemDetail(locationName, itemKey):
+	print(itemKey, locationName)
+	urlPath = 'http://localhost:5000/getDonations/' + locationName
+	respone = requests.get(url=urlPath).json() ; hashDict = {}
+	for item in respone:
+		if item['donationKey'] == itemKey:
+			hashDict = item
+	if g.user:
+		if 'user' in session:
+			username = session['user']
+			return render_template("donationdetail.html", username=username, donationDetail=hashDict)
+	return redirect(url_for('index'))
 
 
 @app.route("/register", methods=["POST"])
@@ -83,10 +105,6 @@ def register():
 	db.child("accounts").push(user.__dict__)
 	return render_template("home.html", username=username)
 
-@app.route("/form", methods=["POST"])
-def resetPass():
-	return
-
 @app.route("/home", methods=["GET"])
 def home():
 	if g.user:
@@ -94,6 +112,15 @@ def home():
 			username = session['user']
 		return render_template('home.html', username=username)
 	return redirect(url_for('index'))
+
+
+# @app.route("/homeView", methods=["GET"])
+# def homeview():
+# 	if g.user:
+# 		if 'user' in session:
+# 			username = session['user']
+# 			return render_template('home.html', username=username)
+# 	return redirect(url_for('index'))
 
 @app.route("/logout")
 def logout():
@@ -125,23 +152,49 @@ def locationListView():
 	return redirect(url_for('index'))
 
 
-@app.route("/donationdetail/<string:location>")
-def donationDetail(location):
+# @app.route("/donationdetail/<string:location>")
+# def locationDetail(location):
+# 	if g.user:
+# 		if 'user' in session:
+# 			username = session['user'] ; hashDict = {}
+# 			# print(location)
+# 			# for data in json.loads(getLocations().data):
+# 			# 	if data['locationName'] == location:
+# 			# 		hashDict = data
+
+# 			return render_template("locationdetail.html", username=username, locationName=location)
+# 	return redirect(url_for('index'))
+
+
+
+@app.route("/searchView", methods=["POST", "GET"])
+def searchView():
 	if g.user:
 		if 'user' in session:
-			username = session['user'] ; hashDict = {}
-			# print(location)
-			# for data in json.loads(getLocations().data):
-			# 	if data['locationName'] == location:
-			# 		hashDict = data
+			username = session['user']
+			if request.method == 'POST':
+				searchText = request.form['searchID']
+				categorySelected = itemSelected = False
 
-			return render_template("donationdetail.html", username=username, locationName=location)
+				# Determine if category box selected
+				try:
+					categorySelected = request.form['categoryChecked']
+					categorySelected = True
+				except:
+					print("Category not selected")
+
+				# Determine if item box selected
+				try:
+					itemSelected = request.form['itemChecked']
+					itemSelected = True
+				except:
+					print("Item not selected")
+
+				print(categorySelected)
+				print(itemSelected)
+				print(searchText)
+			return render_template("search.html", username=username)
 	return redirect(url_for('index'))
-
-
-@app.route("/searchView")
-def searchView():
-	return render_template("search.html")
 
 @app.route("/history")
 def historyView():
@@ -156,7 +209,6 @@ def locationDetail(location):
 			for data in json.loads(getLocations().data):
 				if data['locationName'] == location:
 					hashDict = data
-
 			return render_template("locationdetail.html", username=username, locationName=location, detail=hashDict)
 	return redirect(url_for('index'))
 
@@ -182,7 +234,11 @@ def signin():
 				account.val()["failedAttempts"] = 0
 				db.child("accounts").child(account.key()).update(account.val())
 				session['user'] = username
-				return redirect(url_for('home'))
+				# return make_response(jsonify({
+				# 	"status": "success",
+				# 	"data": account.val()
+				# }))
+				return redirect(url_for('home')) # Must return Json object
 			else:
 				if account.val()["failedAttempts"] >= 3:
 					account.val()["isLock"] = True
@@ -198,12 +254,11 @@ def signin():
 
 def sendRequest():
 	httplib2.Http().request("https://donation-tracker-server-heroku.herokuapp.com/ping")
-	# httplib2.Http().request("http://localhost:5000/ping")
 
 @app.route("/ping")
 def ping():
 	print("PING PING PING")
-	Timer(60.0, sendRequest).start()
+	Timer(900.0, sendRequest).start()
 	return make_response(jsonify({}))
 
 # Run server

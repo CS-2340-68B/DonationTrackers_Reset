@@ -3,24 +3,26 @@
 {% block donationDetail %}
     <div class="w3-container" style="padding-top:2%" align="center">
         <header class="w3-container" style="padding-top:5%" align="center">
-            <h4><b><i class="fa"></i> {{locationName}} Donation List </b></h4>
+            <h4><b><i class="fa"></i> Donation Item detail </b></h4>
         </header><hr>
-    </div>
-
-    <div class="w3-card-4" style="width:50%; background-color:white;">
-        <div class="w3-container w3-row">
-            <!-- {% for location in locationList %}
-                <ul class="w3-ul w3-card-4" style="background-color: white;">
-                    <li class="w3-bar">
-                        <img src="../static/pictures/thiftstore.jpg" class="w3-bar-item w3-circle w3-hide-small" style="width:90px">
-                        <div class="w3-bar-item">
-                            <span class="w3-large">{{location.locationName}}</span><br>
-                            <span class="w3-medium">{{location.address}}</span><br>
-                            <span>{{location.website}}</span>
-                        </div>
-                    </li>
-                </ul>
-            {% endfor %} -->
+        <div class="w3-card-4" style="width:50%; background-color:white;">
+            <div class="w3-container w3-row">
+                <div class="w3-col s6 w3-center" style="margin-top: 5%;">
+                    <img src="../static/pictures/thiftstore0.png" style="height:20%; width:60%"><br><br>
+                    <!-- <button onclick="donateView()" class="w3-button w3-white w3-border w3-border-red w3-round-large">Donation List</button> -->
+                </div>
+                <div class="w3-col s6" align='left'>
+                    <p>Donation Id: {{donationDetail.donationKey}} </p>
+                    <p>Category: {{donationDetail.category}}</p>
+                    <p>Name: {{donationDetail.name}}</p>
+                    <p>Location: {{donationDetail.location}}</p>
+                    <p>Time: {{donationDetail.time}}</p>
+                    <p>Value: {{donationDetail.value}}</p>
+                    <p>Comment: {{donationDetail.comment}}</p>
+                    <p>Short Description: {{donationDetail.shortDescription}}</p>
+                    <p>Full Description: {{donationDetail.fullDescription}}</p>
+                </div>
+            </div>
         </div>
     </div>
 
