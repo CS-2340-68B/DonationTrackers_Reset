@@ -80,10 +80,6 @@
 
     <!-- Main Controller -->
     <script>
-        $("input[name='yes[]']").change(function() {      //When checkbox changes
-            var checked = $(this).attr("checked");
-            $(this).next().attr("disabled", !checked);    //The next checkbox will enable
-        });​
         function viewDetail(event) {
             textOut = event.target.parentElement.innerText.split('\n')
             itemKey = textOut[3].slice(12, textOut[3].length)

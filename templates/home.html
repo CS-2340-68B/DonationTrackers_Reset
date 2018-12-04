@@ -29,6 +29,7 @@
         <div class="w3-bar-block">
             <a href="/home" class="w3-bar-item w3-button w3-padding w3-blue"><i class="fa fa-users fa-fw"></i>  Dashboard</a>
             <a href="/locationlist" class="w3-bar-item w3-button w3-padding"><i class="fa fa-eye fa-fw"></i>  Location List</a>
+            <a href="/map" class="w3-bar-item w3-button w3-padding"><i class="fa fa-map fa-fw"></i>  Location View</a>
             <a href="/searchView" class="w3-bar-item w3-button w3-padding"><i class="fa fa-search fa-fw"></i>  Search</a>
             <a href="/history" class="w3-bar-item w3-button w3-padding"><i class="fa fa-history fa-fw"></i>  History</a>
             <a href="/logout" class="w3-bar-item w3-button w3-padding"><i class="fa fa-cog fa-fw"></i>  Logout</a><br><br>
@@ -37,28 +38,16 @@
 
     <!-- Overlay effect when opening sidebar on small screens -->
     <div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="closeToggle()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
-
-    <!-- Main View -->
-    <!-- <div class="w3-main" style="margin-left:300px;margin-top:43px;"> -->
-    <!-- <div class="middleDiv" align="center">
-        <button type="button" class="btn btn-success">Location List</button>
-    </div> -->
-    <!-- </div> -->
-
     <div class="w3-main" style="margin-left:300px;margin-top:43px;">
         <div class="w3-panel">
             <div class="w3-row-padding" style="margin:0 -16px">
+                {% block dashBoard %} {% endblock %}
                 {% block locationList %} {% endblock %}
                 {% block locationDetail %} {% endblock %}
                 {% block donationList %} {% endblock %}
                 {% block donationDetail %} {% endblock %}
                 {% block search %} {% endblock %}
-                <div class="w3-third">
-                    {% block map %} {% endblock%}
-                </div>
-                <div class="w3-twothird">
-                    {% block view %} {% endblock%}
-                </div>
+                {% block addDonation %} {% endblock %}
             </div>
         </div>
     </div>

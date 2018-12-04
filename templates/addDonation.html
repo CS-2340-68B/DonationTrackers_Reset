@@ -1,0 +1,54 @@
+{% extends "home.html" %}
+
+{% block addDonation %}
+    <div class="w3-container" style="padding-top:2%" align="center">
+        <header class="w3-container" style="padding-top:5%" align="center">
+            <h4><b><i class="fa"></i> Add Item To {{locationName}} </b></h4>
+        </header><hr>
+        <div class="w3-card-4" style="width:50%; background-color:white;">
+            <div class="w3-container w3-row">
+                <form method="POST" action="/addItem">
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label>Category</label>
+                            <input type="text" class="form-control" placeholder="Category" name="categoryBox">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label>Name</label>
+                            <input type="text" class="form-control" placeholder="Name" name="nameBox">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-8">
+                            <label>Short Description</label>
+                            <input type="text" class="form-control" placeholder="This is the best Jeans ever...." name="shortBox">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label>Location Name</label>
+                            <input type="text" class="form-control" value="{{locationName}}" name="locationBox">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputAddress2">Full Description</label>
+                        <input type="text" class="form-control" placeholder="......................" name="fullBox">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label>Comment</label>
+                            <input type="text" class="form-control" name="commentBox" placeholder="Please give it to poor people">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label>Time</label>
+                            <input type="text" class="form-control" placeholder="10:30 AM" name="timeBox">
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label>Value</label>
+                            <input type="text" class="form-control" name="valueBox" placeholder="$50">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add to Store</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
