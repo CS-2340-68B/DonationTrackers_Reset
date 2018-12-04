@@ -8,18 +8,10 @@
         <div class="w3-card-4" style="width:50%; background-color:white;" align="center">
             <div class="w3-container w3-row" align="center">
                 <form action="/searchView" method="POST">
-                    <div class="form-row align-items-center" style="margin-top:5%;">
-                        <div class="col-7">
-                            <input type="text" class="form-control" name="searchID" placeholder="Search for .........">
-                        </div>
-                        <div class="col">
-                            <button class="btn btn-primary" style="float: right;">Search</button>
-                        </div>
-                    </div>
-                    <div class="w3-row w3-center">
+                    <div class="w3-row w3-center" style=" margin-top: 5%;">
                         <div class="w3-col s6">
                             <div class="form-check" style="float: right;">
-                                <input class="form-check-input" type="checkbox" name="itemChecked">
+                                <input class="form-check-input" type="checkbox" name="itemChecked" checked>
                                 <label class="form-check-label" for="autoSizingCheck2">
                                     Item
                                 </label>
@@ -33,18 +25,70 @@
                                 </label>
                             </div>
                         </div>
+                    </div>
+                    <div class="w3-row w3-center">
+                        <div class="col">
+                            <input type="text" class="form-control" name="searchID" placeholder="Search for .........">
+                        </div>
+                    </div>
+                    <div class="w3-row w3-center balanceRow">
+                        <select data-selected="" name="locationName">
+                            {% for location in locationList %}
+                            <option value="{{ location.locationName }}"> {{ location.locationName }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="w3-row w3-center balanceRow">
+                        <button class="btn btn-primary">Search</button>
                     </div><hr>
                 </form>
 
-                <div class="w3-row">
-                    <!-- History view show here -->
-                </div>
+                {% if found %}
+                    <div class="w3-row">
+                        <!-- History view show here -->
+                        <div style="background-color:white;">
+                            <div class="w3-container w3-row">
+                                {% for item in queryOut %}
+                                <ul class="w3-ul w3-card-4" style="background-color: #f7f9de;">
+                                    <li class="w3-bar">
+                                        <span onclick="viewDetail(event)" class="w3-bar-item w3-button w3-black w3-large w3-right">Detail</span>
+                                        <img src="../static/pictures/thiftstore0.png" class="w3-bar-item w3-circle w3-hide-small" style="width:90px">
+                                        <div class="w3-bar-item">
+                                            <span>Location: {{item.location}}</span><br>
+                                            <span>Name: {{item.name}}</span><br>
+                                            <span>Description: {{item.fullDescription}}</span><br>
+                                            <span>DonationId: {{item.donationKey}}</span><br>
+                                        </div>
+                                    </li>
+                                </ul><br>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>
 
+
+    <style>
+        .balanceRow {
+            margin-top: 1%;
+        }
+    </style>
+
+
     <!-- Main Controller -->
     <script>
-
+        $("input[name='yes[]']").change(function() {      //When checkbox changes
+            var checked = $(this).attr("checked");
+            $(this).next().attr("disabled", !checked);    //The next checkbox will enable
+        });​
+        function viewDetail(event) {
+            textOut = event.target.parentElement.innerText.split('\n')
+            itemKey = textOut[3].slice(12, textOut[3].length)
+            locationName = textOut[0].slice(16, textOut[0].length)
+            window.location.href = '/getDonationItemDetail/' + locationName + '/' + itemKey
+        }
     </script>
 {% endblock %}
