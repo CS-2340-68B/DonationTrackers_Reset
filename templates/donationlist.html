@@ -11,7 +11,10 @@
                 {% for item in donationLists %}
                     <ul class="w3-ul w3-card-4" style="background-color: white;">
                         <li class="w3-bar">
-                            <span onclick="viewDetail(event)" class="w3-bar-item w3-button w3-black w3-large w3-right">Detail</span>
+                            {% if userType %}
+                                <span onclick="viewDetail(event, 'edit')" class="w3-bar-item w3-button w3-gray w3-large w3-right">Edit</span>
+                            {% endif %}
+                            <span onclick="viewDetail(event, 'detail')" class="w3-bar-item w3-button w3-black w3-large w3-right">Detail</span>
                             <img src="../static/pictures/thiftstore0.png" class="w3-bar-item w3-circle w3-hide-small" style="width:90px">
                             <div class="w3-bar-item">
                                 <span>Category: {{item.category}}</span><br>
@@ -35,10 +38,14 @@ span {
 
 <!-- Main controller -->
 <script>
-    function viewDetail(event) {
+    function viewDetail(event, str) {
         textOut = event.target.parentElement.innerText.split('\n')
         itemKey = textOut[3].slice(12, textOut[3].length)
-        window.location.href = '/getDonationItemDetail/' + '{{locationName}}' + '/' + itemKey
+        if (str == 'detail') {
+            window.location.href = '/getDonationItemDetail/' + '{{locationName}}' + '/' + itemKey
+        } else if (str == 'edit') {
+            window.location.href = '/editItem/' + '{{locationName}}' + '/' + itemKey
+        }
     }
 </script>
 {% endblock %}
