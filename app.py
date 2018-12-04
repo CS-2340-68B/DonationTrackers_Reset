@@ -1,6 +1,7 @@
 from flask import Flask, render_template, redirect, session, request, g, url_for, flash, make_response, jsonify
 from Server.Models.User import User
-import os, time, json, requests
+from Server.Models.ItemDetail import ItemDetail
+import os, time, json, requests, string
 from Server.Functions.PasswordModifier import encrypt
 import pyrebase
 import httplib2
@@ -31,7 +32,6 @@ def before_request():
 
 	if 'user' in session:
 		g.user = session['user']
-	print(session)
 
 def auth_required(f):
 	@wraps(f)
@@ -45,7 +45,7 @@ def auth_required(f):
 # Main page index.html
 @app.route("/")
 def index():
-	print("test ", getDonations("AFD Station 4"))
+	# print(requests.get('http://localhost:5000/getDonations/'))
 	return render_template("index.html", locationList=json.loads(getLocations().data))
 
 @app.route("/getLocations")
@@ -59,7 +59,10 @@ def getLocations():
 @app.route("/getDonations/<string:locationName>", methods=["GET", "POST"])
 def getDonations(locationName):
 	# if request.method == "POST":
-	localDB = db.child("donations").order_by_child("location").equal_to(locationName)
+	if not locationName:
+		localDB = db.child("donations").order_by_child("location")
+	else:
+		localDB = db.child("donations").order_by_child("location").equal_to(locationName)
 	donations = []
 	for donation in localDB.get().each():
 		d = donation.val()
@@ -71,13 +74,16 @@ def getDonations(locationName):
 @app.route("/getDonationsData/<string:locationName>",  methods=["GET"])
 def getDonationList(locationName):
 	urlPath = 'http://localhost:5000/getDonations/' + locationName
-	respone = requests.get(url=urlPath)
-	return render_template("donationlist.html", donationLists=respone.json(), locationName=locationName)
+	respone = requests.get(url=urlPath) ; condition = True
+	if 'type' in session:
+		type = session['type']
+		if type in ["ADMIN", "USER"]:
+			condition = False
+	return render_template("donationlist.html", donationLists=respone.json(), locationName=locationName, userType=condition)
 
 
 @app.route("/getDonationItemDetail/<string:locationName>/<string:itemKey>", methods=["GET"])
 def getDonationItemDetail(locationName, itemKey):
-	print(itemKey, locationName)
 	urlPath = 'http://localhost:5000/getDonations/' + locationName
 	respone = requests.get(url=urlPath).json() ; hashDict = {}
 	for item in respone:
@@ -103,7 +109,50 @@ def register():
 	if userType == "ADMIN" or userType == "USER":
 		user.assignedLocation = None
 	db.child("accounts").push(user.__dict__)
+	# return make_response(jsonify({"status": "Success"}))
 	return render_template("home.html", username=username)
+
+@app.route("/addItem", methods=["POST"])
+def addItem():
+	if g.user:
+		if 'user' in session:
+			username = session['user']
+			category = request.form.get("categoryBox") ; name = request.form.get("nameBox")
+			shortDes = request.form.get("shortBox") ; location = request.form.get("locationBox")
+			fullDes = request.form.get("fullBox") ; comment = request.form.get("commentBox")
+			time = request.form.get("timeBox") ; value = request.form.get("valueBox")
+			item = ItemDetail(category, name, shortDes, fullDes, comment, location, time, value)
+			db.child("donations").push(item.__dict__)
+			# return make_response(jsonify({"status": "Success"}))
+			return render_template("home.html", username=username, edit=False)
+
+# @app.route("/editItem/<string:location>/<string:itemID>", defaults={'location' : None, 'itemID': None}, methods=["POST"])
+@app.route("/editItem/<string:location>/<string:itemID>", methods=["POST", "GET"])
+def editItem(location, itemID):
+	if g.user:
+		if 'user' in session:
+			username = session['user']
+			if request.method == "POST":
+				category = request.form.get("categoryBox") ; name = request.form.get("nameBox")
+				shortDes = request.form.get("shortBox") ; location = request.form.get("locationBox")
+				fullDes = request.form.get("fullBox") ; comment = request.form.get("commentBox")
+				time = request.form.get("timeBox") ; value = request.form.get("valueBox")
+				donationId = request.form.get("donationID")
+				item = ItemDetail(category, name, shortDes, fullDes, comment, location, time, value)
+				db.child("donations").child(donationId).update(item.__dict__)
+				# return make_response(jsonify({"status": "Success"}))
+				return render_template("home.html")
+			else:
+				# Fix html convert format of and percentage
+				if '&' in location:
+					location = location.replace("amp;", "")
+
+				urlPath = 'http://localhost:5000/getDonations/' + location
+				respone = requests.get(url=urlPath).json() ; hashDict = {}
+				for item in respone:
+					if item['donationKey'] == itemID:
+						hashDict = item
+				return render_template("addDonation.html", edit=True, locationName=location, detail=hashDict)
 
 @app.route("/home", methods=["GET"])
 def home():
@@ -113,58 +162,34 @@ def home():
 		return render_template('home.html', username=username)
 	return redirect(url_for('index'))
 
-
-# @app.route("/homeView", methods=["GET"])
-# def homeview():
-# 	if g.user:
-# 		if 'user' in session:
-# 			username = session['user']
-# 			return render_template('home.html', username=username)
-# 	return redirect(url_for('index'))
-
 @app.route("/logout")
 def logout():
 	session.pop('user', None)
-	return  redirect(url_for('index'))
-
+	session.pop('type', None)
+	return redirect(url_for('index'))
 
 @app.route("/map", methods=["GET"])
 def mapView():
 	if g.user:
 		if 'user' in session:
 			username = session['user']
-			return render_template("map.html", username=username)
+			return render_template("dashBoard.html", username=username)
 	return redirect(url_for('index'))
-
-@app.route("/test", methods=["GET"])
-def testView():
-	return render_template("test.html")
 
 @app.route("/locationlist")
 def locationListView():
 	if g.user:
 		if 'user' in session:
-			username = session['user']
+			username, type = session['user'], session['type']
+			print(type)
+			condition = True
 			hashDict = json.loads(getLocations().data)
 			for index in range(len(hashDict)):
 				hashDict[index]['picture'] = "../static/pictures/thiftstore" + str(index) + ".png"
-			return render_template("locationlist.html", username=username, locationList=hashDict)
+			if type in ["ADMIN", "USER"]:
+				condition = False
+			return render_template("locationlist.html", username=username, locationList=hashDict, userType=condition)
 	return redirect(url_for('index'))
-
-
-# @app.route("/donationdetail/<string:location>")
-# def locationDetail(location):
-# 	if g.user:
-# 		if 'user' in session:
-# 			username = session['user'] ; hashDict = {}
-# 			# print(location)
-# 			# for data in json.loads(getLocations().data):
-# 			# 	if data['locationName'] == location:
-# 			# 		hashDict = data
-
-# 			return render_template("locationdetail.html", username=username, locationName=location)
-# 	return redirect(url_for('index'))
-
 
 
 @app.route("/searchView", methods=["POST", "GET"])
@@ -172,9 +197,13 @@ def searchView():
 	if g.user:
 		if 'user' in session:
 			username = session['user']
+			locationList = json.loads(getLocations().data)
+			# locationList.insert(0, {"locationName" : 'ALL'})
+			foundData = False
 			if request.method == 'POST':
 				searchText = request.form['searchID']
 				categorySelected = itemSelected = False
+				locationName = request.form['locationName']
 
 				# Determine if category box selected
 				try:
@@ -189,16 +218,40 @@ def searchView():
 					itemSelected = True
 				except:
 					print("Item not selected")
-
-				print(categorySelected)
-				print(itemSelected)
-				print(searchText)
-			return render_template("search.html", username=username)
+				urlPath = 'http://localhost:5000/getDonations/' + locationName
+				respone = requests.get(url=urlPath).json() ; result = []
+				if locationName == 'ALL':
+					# TODO Implement search for all locations
+					pass
+				else:
+					if respone:
+						for item in respone:
+							if categorySelected:
+								foundData = True
+								if searchText.lower() in item['category'].lower():
+									result.append(item)
+							elif itemSelected:
+								foundData = True
+								if searchText.lower() in item['name'].lower():
+									result.append(item)
+						# print(result)
+						return render_template(
+							"search.html",
+							username=username,
+							locationList=locationList,
+							queryOut=result,
+							found=foundData
+						)
+			return render_template("search.html", username=username, locationList=locationList, found=foundData)
 	return redirect(url_for('index'))
 
 @app.route("/history")
 def historyView():
 	pass
+
+@app.route("/addDonation/<string:location>", methods=["GET"])
+def addDonation(location):
+	return render_template("addDonation.html", locationName=location)
 
 @app.route("/locationdetail/<string:location>")
 def locationDetail(location):
@@ -218,6 +271,7 @@ def signin():
 	checkValidUser = True
 	if request.method == 'POST':
 		session.pop('user', None) # Add new session for the user
+		session.pop('type', None)
 		username = request.form['email_signin']
 		password = request.form['password_signin']
 		localDB = db.child("accounts").order_by_child("username").equal_to(username)
@@ -234,6 +288,7 @@ def signin():
 				account.val()["failedAttempts"] = 0
 				db.child("accounts").child(account.key()).update(account.val())
 				session['user'] = username
+				session['type'] = account.val()['type']
 				# return make_response(jsonify({
 				# 	"status": "success",
 				# 	"data": account.val()
