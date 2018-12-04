@@ -1,0 +1,36 @@
+{% extends "home.html" %}
+
+{% block history %}
+
+    <div class="w3-container" style="padding-top:2%" align="center">
+        <header class="w3-container" style="padding-top:5%" align="center">
+            <h4><b><i class="fa"></i> Search History </b></h4>
+        </header><hr>
+        <div style="width:50%; background-color:white;" align="left;">
+            <div class="w3-container w3-row">
+                {% if invalid %}
+                    <h2>No History Record</h2>
+                {% else %}
+                    {% for item in history %}
+                        <ul class="w3-ul w3-card-4" style="background-color: white;">
+                            <li class="w3-bar">
+                                <div class="w3-bar-item" align="left;">
+                                    <span>Name: {{item.Name}}</span><br>
+                                    <span>Location: {{item.Location}}</span><br>
+                                </div>
+                            </li>
+                        </ul><br>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+<!-- Style sheet for search history -->
+<style>
+    span {
+        float: left;
+    }
+</style>
+
+{% endblock %}
