@@ -23,6 +23,7 @@ db = firebase.database()
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
+
 @app.before_request
 def before_request():
 	try:
@@ -33,6 +34,7 @@ def before_request():
 	if 'user' in session:
 		g.user = session['user']
 
+
 def auth_required(f):
 	@wraps(f)
 	def decorated(*args, **kwargs):
@@ -42,11 +44,13 @@ def auth_required(f):
 		return make_response('Could not verify your login', 401, {'WWW-Authenticate': 'Basic realm="Login Required"'})
 	return decorated
 
+
 # Main page index.html
 @app.route("/")
 def index():
 	# print(requests.get('http://localhost:5000/getDonations/'))
 	return render_template("index.html", locationList=json.loads(getLocations().data))
+
 
 @app.route("/getLocations")
 def getLocations():
@@ -55,6 +59,7 @@ def getLocations():
 	for location in localDB.get().each():
 		locations.append(location.val())
 	return make_response(jsonify(locations))
+
 
 @app.route("/getDonations/<string:locationName>", methods=["GET", "POST"])
 def getDonations(locationName):
@@ -112,6 +117,7 @@ def register():
 	# return make_response(jsonify({"status": "Success"}))
 	return render_template("home.html", username=username)
 
+
 @app.route("/addItem", methods=["POST"])
 def addItem():
 	if g.user:
@@ -125,6 +131,7 @@ def addItem():
 			db.child("donations").push(item.__dict__)
 			# return make_response(jsonify({"status": "Success"}))
 			return render_template("home.html", username=username, edit=False)
+
 
 # @app.route("/editItem/<string:location>/<string:itemID>", defaults={'location' : None, 'itemID': None}, methods=["POST"])
 @app.route("/editItem/<string:location>/<string:itemID>", methods=["POST", "GET"])
@@ -154,6 +161,7 @@ def editItem(location, itemID):
 						hashDict = item
 				return render_template("addDonation.html", edit=True, locationName=location, detail=hashDict)
 
+
 @app.route("/home", methods=["GET"])
 def home():
 	if g.user:
@@ -162,11 +170,13 @@ def home():
 		return render_template('home.html', username=username)
 	return redirect(url_for('index'))
 
+
 @app.route("/logout")
 def logout():
 	session.pop('user', None)
 	session.pop('type', None)
 	return redirect(url_for('index'))
+
 
 @app.route("/map", methods=["GET"])
 def mapView():
@@ -175,6 +185,7 @@ def mapView():
 			username = session['user']
 			return render_template("dashBoard.html", username=username)
 	return redirect(url_for('index'))
+
 
 @app.route("/locationlist")
 def locationListView():
@@ -204,6 +215,14 @@ def searchView():
 				searchText = request.form['searchID']
 				categorySelected = itemSelected = False
 				locationName = request.form['locationName']
+
+				# Keep track of search keyword
+				if ('history' not in session):
+					session['history'] = [{'Name' : searchText, "Location" : locationName}]
+				else:
+					session['history'].append({'Name' : searchText, "Location" : locationName})
+
+				print(session)
 
 				# Determine if category box selected
 				try:
@@ -245,13 +264,24 @@ def searchView():
 			return render_template("search.html", username=username, locationList=locationList, found=foundData)
 	return redirect(url_for('index'))
 
+
 @app.route("/history")
 def historyView():
-	pass
+	if g.user:
+		if 'user' in session:
+			username = session['user']
+			try:
+				result = session['history']
+				return render_template("history.html", invalid=False, history=result, username=username)
+			except:
+				return render_template("history.html", invalid=True, username=username)
+	return redirect(url_for('index'))
+
 
 @app.route("/addDonation/<string:location>", methods=["GET"])
 def addDonation(location):
 	return render_template("addDonation.html", locationName=location)
+
 
 @app.route("/locationdetail/<string:location>")
 def locationDetail(location):
@@ -270,8 +300,7 @@ def locationDetail(location):
 def signin():
 	checkValidUser = True
 	if request.method == 'POST':
-		session.pop('user', None) # Add new session for the user
-		session.pop('type', None)
+		session.pop('user', None) ; session.pop('type', None)
 		username = request.form['email_signin']
 		password = request.form['password_signin']
 		localDB = db.child("accounts").order_by_child("username").equal_to(username)
