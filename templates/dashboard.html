@@ -1,0 +1,19 @@
+{% extends "home.html" %}
+
+{% block dashBoard %}
+    <div class="w3-container" align="center">
+        <header class="w3-container" style="padding-top:5%" align="center">
+            <h4><b><i class="fa"></i> Map View </b></h4>
+        </header>
+        <div class="mapouter">
+            <div class="gmap_canvas">
+                <iframe id="gmap_canvas" src="https://www.google.com/maps/d/embed?mid=1d7ZKA4alirrfo8fXqsRzVeHH-2I9ZzMK" width="1000" height="900" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe>
+            </div>
+            <style>.mapouter{text-align:right;height:625px;width:819px;}.gmap_canvas {overflow:hidden;background:none!important;height:800px;width:900px;}</style>
+        </div>
+    </div>
+
+<script>
+
+</script>
+{% endblock %}

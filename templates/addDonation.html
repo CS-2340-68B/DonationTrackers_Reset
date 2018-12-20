@@ -1,0 +1,106 @@
+{% extends "home.html" %}
+
+{% block addDonation %}
+    <div class="w3-container" style="padding-top:2%" align="center">
+        <header class="w3-container" style="padding-top:5%" align="center">
+            {% if edit %}
+                <h4><b><i class="fa"></i> Edit Item To {{locationName}} </b></h4>
+            {% else %}
+                <h4><b><i class="fa"></i> Add Item To {{locationName}} </b></h4>
+            {% endif %}
+        </header><hr>
+        <div class="w3-card-4" style="width:50%; background-color:white;">
+            <div class="w3-container w3-row">
+                {% if edit %}
+                    <form method="POST" action="/editItem/{{locationName}}/{{detail.donationKey}}">
+                {% else %}
+                    <form method="POST" action="/addItem">
+                {% endif %}
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label>Category</label>
+                                {% if edit %}
+                                    <input type="text" class="form-control" name="categoryBox" value="{{detail.category}}">
+                                {% else %}
+                                    <input type="text" class="form-control" placeholder="Category" name="categoryBox">
+                                {% endif %}
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>Name</label>
+                                {% if edit %}
+                                    <input type="text" class="form-control" name="nameBox" value="{{detail.name}}">
+                                {% else %}
+                                    <input type="text" class="form-control" placeholder="Name" name="nameBox">
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-8">
+                                <label>Short Description</label>
+                                {% if edit %}
+                                    <input type="text" class="form-control" name="shortBox" value="{{detail.shortDescription}}">
+                                {% else %}
+                                    <input type="text" class="form-control" placeholder="This is the best Jeans ever...." name="shortBox">
+                                {% endif %}
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label>Location Name</label>
+                                {% if edit %}
+                                    <input type="text" class="form-control" value="{{locationName}}" name="locationBox">
+                                {% else %}
+                                    <input type="text" class="form-control" value="{{locationName}}" name="locationBox">
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Full Description</label>
+                            {% if edit %}
+                                <input type="text" class="form-control" name="fullBox" value="{{detail.fullDescription}}">
+                            {% else %}
+                                <input type="text" class="form-control" placeholder="......................" name="fullBox">
+                            {% endif %}
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label>Comment</label>
+                                {% if edit %}
+                                    <input type="text" class="form-control" name="commentBox" value="{{detail.comment}}">
+                                {% else %}
+                                    <input type="text" class="form-control" name="commentBox" placeholder="Please give it to poor people">
+                                {% endif %}
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label>Donation ID</label>
+                                {% if edit %}
+                                    <input type="text" class="form-control" name="donationID" value="{{detail.donationKey}}" readonly>
+                                    {% else %}
+                                    <input type="text" class="form-control" placeholder="Auto Generate" readonly>
+                                {% endif %}
+                            </div>
+                            <div class="form-group col-md-2">
+                                <label>Time</label>
+                                {% if edit %}
+                                    <input type="text" class="form-control" name="timeBox" value="{{detail.time}}">
+                                {% else %}
+                                    <input type="text" class="form-control" placeholder="10:30 AM" name="timeBox">
+                                {% endif %}
+                            </div>
+                            <div class="form-group col-md-2">
+                                <label>Value</label>
+                                {% if edit %}
+                                    <input type="text" class="form-control" value="{{detail.value}}" name="valueBox">
+                                {% else %}
+                                    <input type="text" class="form-control" name="valueBox" placeholder="$50">
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% if edit %}
+                            <button type="submit" class="btn btn-primary">Edit item</button>
+                        {% else %}
+                            <button type="submit" class="btn btn-primary">Add to Store</button>
+                        {% endif %}
+                    </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
